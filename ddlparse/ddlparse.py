@@ -287,7 +287,7 @@ class DdlParseColumn(DdlParseTableColumnBase):
 
         # BigQuery data type = {source_database: [data type, ...], ...}
         BQ_DATA_TYPE_DIC = OrderedDict()
-        BQ_DATA_TYPE_DIC["STRING"] = {None: [re.compile(r"(STRING|CHAR|TEXT|CLOB|JSON|UUID)")]}
+        BQ_DATA_TYPE_DIC["STRING"] = {None: [re.compile(r"(STRING|CHAR|TEXT|CLOB|JSON|UUID|GEOMETRY|RASTER|LTREE)")]}
         BQ_DATA_TYPE_DIC["INTEGER"] = {None: [re.compile(r"INT|SERIAL|YEAR")]}
         BQ_DATA_TYPE_DIC["FLOAT"] = {None: [re.compile(r"(FLOAT|DOUBLE)"), "REAL", "MONEY"]}
         BQ_DATA_TYPE_DIC["DATETIME"] = {
@@ -578,8 +578,8 @@ class DdlParse(DdlParseBase):
     """DDL parser"""
 
     _LPAR, _RPAR, _COMMA, _SEMICOLON, _DOT, _DOUBLEQUOTE, _BACKQUOTE, _SPACE = map(Suppress, "(),;.\"` ")
-    _CREATE, _TABLE, _TEMP, _CONSTRAINT, _NOT_NULL, _PRIMARY_KEY, _UNIQUE, _UNIQUE_KEY, _FOREIGN_KEY, _REFERENCES, _KEY, _CHAR_SEMANTICS, _BYTE_SEMANTICS = \
-        map(CaselessKeyword, "CREATE, TABLE, TEMP, CONSTRAINT, NOT NULL, PRIMARY KEY, UNIQUE, UNIQUE KEY, FOREIGN KEY, REFERENCES, KEY, CHAR, BYTE".replace(", ", ",").split(","))
+    _CREATE, _TABLE, _EXTERNAL_TABLE, _TEMP, _CONSTRAINT, _NOT_NULL, _PRIMARY_KEY, _UNIQUE, _UNIQUE_KEY, _FOREIGN_KEY, _REFERENCES, _KEY, _CHAR_SEMANTICS, _BYTE_SEMANTICS = \
+        map(CaselessKeyword, "CREATE, TABLE, EXTERNAL TABLE, TEMP, CONSTRAINT, NOT NULL, PRIMARY KEY, UNIQUE, UNIQUE KEY, FOREIGN KEY, REFERENCES, KEY, CHAR, BYTE".replace(", ", ",").split(","))
     _TYPE_UNSIGNED, _TYPE_ZEROFILL = \
         map(CaselessKeyword, "UNSIGNED, ZEROFILL".replace(", ", ",").split(","))
     _COL_ATTR_DISTKEY, _COL_ATTR_SORTKEY, _COL_ATTR_CHARACTER_SET = \
@@ -597,7 +597,7 @@ class DdlParse(DdlParseBase):
     _COMMENT = Suppress("--" + Regex(r".+"))
 
 
-    _CREATE_TABLE_STATEMENT = Suppress(_CREATE) + Optional(_TEMP)("temp") + Suppress(_TABLE) + Optional(Suppress(CaselessKeyword("IF NOT EXISTS"))) \
+    _CREATE_TABLE_STATEMENT = Suppress(_CREATE) + Optional(_TEMP)("temp") + Suppress(_TABLE|_EXTERNAL_TABLE) + Optional(Suppress(CaselessKeyword("IF NOT EXISTS"))) \
         + Optional(_SUPPRESS_QUOTE) + Optional(Word(alphanums + "_")("schema") + Optional(_SUPPRESS_QUOTE) + _DOT + Optional(_SUPPRESS_QUOTE)) + Word(alphanums + "_<>")("table") + Optional(_SUPPRESS_QUOTE) \
         + _LPAR \
         + delimitedList(
