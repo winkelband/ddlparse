@@ -1,3 +1,9 @@
+*Disclaimer*:  
+This is a fork of [shinichi-takii's](https://github.com/shinichi-takii/) [ddlparse](https://github.com/shinichi-takii/ddlparse).
+
+**Changes:**  
+Dec 2020: Added support for more data types and database object types by [winkelband](https://github.com/winkelband).
+
 # DDL Parse
 
 [![PyPI version](https://img.shields.io/pypi/v/ddlparse.svg)](https://pypi.org/project/ddlparse/)
